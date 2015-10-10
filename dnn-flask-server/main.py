@@ -1,0 +1,44 @@
+import os
+import numpy as np
+from tasks import test_dnn
+from flask import *
+from werkzeug import secure_filename
+from keras.optimizers import *
+from keras.models import *
+from keras.layers.core import *
+
+app = Flask("Deep Neural Net Training Flask Server", static_url_path='')
+
+app.config['UPLOAD_FOLDER'] = 'data/'
+
+ALLOWED_EXTENSIONS = set(['csv'])
+
+layers = [
+    Dense(64, 20)
+]
+
+dropouts = [Dropout(x) for x in np.linspace(0, 1, 100)]
+
+# @app.route('/start/', methods=['GET'])
+# def hello():
+#     layers = np.random.choice(dropouts, np.random.randint(0, len(dropouts) - 1))
+#     result = test_dnn.delay(layers)
+#     found = "Randomly chose %d layers" % result.get()
+#     return jsonify(message=found)
+
+@app.route('/')
+def index():
+    return app.send_static_file('index.html')
+
+@app.route('/start', methods=['POST'])
+def upload():
+    print request.json
+    session_id = np.random.randint(0, 50000)
+    return jsonify(session_id=session_id)
+
+if __name__ == '__main__':
+  app.debug=True
+  app.run(
+        host="0.0.0.0",
+        port=int("8000")
+  )
