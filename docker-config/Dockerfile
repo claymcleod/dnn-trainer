@@ -1,1 +1,1 @@
-FROM dockerfile/python
+FROM python
