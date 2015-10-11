@@ -49,21 +49,9 @@ def upload():
     labels = labels.as_matrix()
 
     tasks = []
-    for i in range(0, 1):
+    for i in range(0, 1000):
+        print "{}".format(i)
         tasks.append(test_dnn.delay(features, labels, layers))
-
-    print "Done"
-    while True:
-        finished = True
-        for task in tasks:
-            if not task.ready():
-                print "not ready"
-                finished = False
-                break
-
-        if finished:
-            print "Finished!"
-            break
 
     print "Done"
     session_id = np.random.randint(0, 50000)
