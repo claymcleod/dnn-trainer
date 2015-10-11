@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import pandas as pd
 from tasks import test_dnn
 from flask import *
 from werkzeug import secure_filename
@@ -32,7 +33,21 @@ def index():
 
 @app.route('/start', methods=['POST'])
 def upload():
-    print request.json
+    label_name = request.json["label"]
+    del request.json["label"]
+
+    data = request.json["data"]
+    columns = data[0]
+    del data[0]
+
+    features = pd.DataFrame(data, columns=columns)
+    features.fillna(0)
+    
+    labels = features[label_name]
+    del features[label_name]
+
+    test_dnn.delay(features.as_matrix(), labels.as_matrix(), layers)
+
     session_id = np.random.randint(0, 50000)
     return jsonify(session_id=session_id)
 
