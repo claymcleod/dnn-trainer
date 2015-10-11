@@ -42,12 +42,30 @@ def upload():
 
     features = pd.DataFrame(data, columns=columns)
     features.fillna(0)
-    
+
     labels = features[label_name]
     del features[label_name]
+    features = features.as_matrix()
+    labels = labels.as_matrix()
 
-    test_dnn.delay(features.as_matrix(), labels.as_matrix(), layers)
+    tasks = []
+    for i in range(0, 1):
+        tasks.append(test_dnn.delay(features, labels, layers))
 
+    print "Done"
+    while True:
+        finished = True
+        for task in tasks:
+            if not task.ready():
+                print "not ready"
+                finished = False
+                break
+
+        if finished:
+            print "Finished!"
+            break
+
+    print "Done"
     session_id = np.random.randint(0, 50000)
     return jsonify(session_id=session_id)
 
