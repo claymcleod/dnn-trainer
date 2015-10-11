@@ -7,7 +7,6 @@ app = Celery('dnn', backend='amqp://guest@129.114.108.156//', broker='amqp://gue
 
 @app.task
 def test_dnn(X_train, y_train, layers):
-    print X_train.__class__.__name__
     model = Sequential()
     model.add(Dense(output_dim=64, input_dim=X_train.shape[1], init="glorot_uniform"))
     model.add(Activation("relu"))
