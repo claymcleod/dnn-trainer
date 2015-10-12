@@ -1,5 +1,4 @@
-FROM python
-RUN apt-get update && apt-get install python-dev gfortran libblas-dev liblapack-dev python-numpy python-scipy python-pandas -y
+FROM scivm/scientific-python-2.7
 RUN pip install celery keras
 RUN git clone https://github.com/claymcleod/dnn-trainer.git --depth 1
 WORKDIR dnn-trainer/dnn-flask-server
