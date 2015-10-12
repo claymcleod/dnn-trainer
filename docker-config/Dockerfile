@@ -1,5 +1,5 @@
 FROM python
-RUN apt-get update && apt-get install python-dev
+RUN apt-get update && apt-get install python-dev gfortran libblas-dev liblapack-dev -y
 RUN pip install celery keras
 RUN git clone https://github.com/claymcleod/dnn-trainer.git --depth 1
 WORKDIR dnn-trainer/dnn-flask-server
