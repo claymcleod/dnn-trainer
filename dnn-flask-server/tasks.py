@@ -15,5 +15,5 @@ def test_dnn(X_train, y_train, layers):
     # model.compile(loss='categorical_crossentropy', optimizer='sgd')
     # model.fit(X_train, y_train, nb_epoch=200, batch_size=32)
     # objective_score = model.evaluate(X_train, y_train, batch_size=32)
-    print "Hello World"
+    print("Hello World")
     return ""
