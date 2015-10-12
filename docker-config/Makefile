@@ -1,2 +1,2 @@
 all:
-	sudo docker run -d claymcleod/dnn-trainer sh ./run-celery.sh
+	sudo docker run -d claymcleod/dnn-worker
