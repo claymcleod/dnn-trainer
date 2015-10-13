@@ -20,9 +20,10 @@ layers = [
 
 dropouts = [Dropout(x) for x in np.linspace(0, 1, 100)]
 
-def callback(result):
-    print(result)
-    
+from pymongo import MongoClient
+client = MongoClient('mongodb://guest:guest@ds037234.mongolab.com:37234/dnn-trainer')
+db = client.dnn_results
+
 # @app.route('/start/', methods=['GET'])
 # def hello():
 #     layers = np.random.choice(dropouts, np.random.randint(0, len(dropouts) - 1))
@@ -36,6 +37,7 @@ def index():
 
 @app.route('/start', methods=['POST'])
 def upload():
+    session_id = np.random.randint(0, 50000)
     label_name = request.json["label"]
     del request.json["label"]
 
@@ -54,10 +56,9 @@ def upload():
     tasks = []
     for i in range(0, 1000):
         print "{}".format(i)
-        tasks.append(test_dnn.delay(features, labels, layers, cb=callback))
+        tasks.append(test_dnn.delay(features, labels, layers, session_id, db=db))
 
     print "Done"
-    session_id = np.random.randint(0, 50000)
     return jsonify(session_id=session_id)
 
 if __name__ == '__main__':

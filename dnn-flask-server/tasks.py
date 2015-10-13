@@ -2,11 +2,12 @@ from celery import Celery
 from keras.optimizers import *
 from keras.models import *
 from keras.layers.core import *
+from pymongo import *
 
 app = Celery('dnn', backend='amqp://guest@129.114.108.156//', broker='amqp://guest@129.114.108.156//')
 
 @app.task
-def test_dnn(X_train, y_train, layers, cb=None):
+def test_dnn(X_train, y_train, layers, session_id, db=None):
     # model = Sequential()
     # model.add(Dense(output_dim=64, input_dim=X_train.shape[1], init="glorot_uniform"))
     # model.add(Activation("relu"))
@@ -15,6 +16,12 @@ def test_dnn(X_train, y_train, layers, cb=None):
     # model.compile(loss='categorical_crossentropy', optimizer='sgd')
     # model.fit(X_train, y_train, nb_epoch=200, batch_size=32)
     # objective_score = model.evaluate(X_train, y_train, batch_size=32)
-    if not cb is not None:
-        cb("Hello world")
-    return ""
+    result = 'Hello world'
+
+    if db is not None:
+        db.insert_one({
+            'session_id': session_id,
+            'result': result
+        })
+
+    return result
