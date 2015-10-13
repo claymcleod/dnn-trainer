@@ -51,11 +51,14 @@ def upload():
     tasks = []
     for i in range(0, 1000):
         print "{}".format(i)
-        tasks.append(test_dnn.delay(features, labels, layers))
+        tasks.append(test_dnn.delay(features, labels, layers, cb=callback))
 
     print "Done"
     session_id = np.random.randint(0, 50000)
     return jsonify(session_id=session_id)
+
+def callback(result):
+    print(result)
 
 if __name__ == '__main__':
   app.debug=True
