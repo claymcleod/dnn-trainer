@@ -24,5 +24,4 @@ def test_dnn(X_train, y_train, layers, session_id):
         'result': objective_score
     })
 
-
-    return result
+    return objective_score
