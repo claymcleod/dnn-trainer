@@ -1,5 +1,5 @@
 FROM claymcleod/dnn-base
-RUN pip install pymongo
+RUN pip install pymongo sklearn
 WORKDIR dnn-trainer/dnn-flask-server
 RUN git pull
 ENV C_FORCE_ROOT=True
