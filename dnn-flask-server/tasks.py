@@ -13,7 +13,7 @@ app = Celery('dnn', backend='amqp://guest@129.114.108.156//', broker='amqp://gue
 def test_dnn(X_train, y_train, layers, session_id):
     model = Sequential()
     model.add(Dense(output_dim=64, input_dim=X_train.shape[1], init="glorot_uniform"))
-    model.add(Activation("relu"))
+    model.add(Activation("softmax"))
     model.add(Dense(output_dim=1, input_dim=64, init="glorot_uniform"))
     model.add(Activation("softmax"))
     model.compile(loss='categorical_crossentropy', optimizer='sgd')
