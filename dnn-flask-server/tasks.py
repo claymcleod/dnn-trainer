@@ -3,7 +3,7 @@ from keras.optimizers import *
 from keras.models import *
 from keras.layers.core import *
 from pymongo import MongoClient
-client = MongoClient('mongodb://guest:guest@ds037234.mongolab.com:37234/dnn-trainer')
+client = MongoClient('mongodb://clay:clay@ds037234.mongolab.com:37234/dnn-trainer')
 db = client.dnn_results
 
 app = Celery('dnn', backend='amqp://guest@129.114.108.156//', broker='amqp://guest@129.114.108.156//')
