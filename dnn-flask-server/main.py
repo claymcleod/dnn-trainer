@@ -3,22 +3,16 @@ import numpy as np
 import pandas as pd
 from tasks import test_dnn
 from flask import *
-from werkzeug import secure_filename
-from keras.optimizers import *
-from keras.models import *
-from keras.layers.core import *
+
+
+from pybrain import *
+from pybrain.tools.shortcuts import buildNetwork
+from pybrain.datasets import SupervisedDataSet
+from pybrain.supervised.trainers import BackpropTrainer
+from pybrain.structure import RecurrentNetwork
+import numpy
 
 app = Flask("Deep Neural Net Training Flask Server", static_url_path='')
-
-app.config['UPLOAD_FOLDER'] = 'data/'
-
-ALLOWED_EXTENSIONS = set(['csv'])
-
-layers = [
-    Dense(64, 20)
-]
-
-dropouts = [Dropout(x) for x in np.linspace(0, 1, 100)]
 
 # @app.route('/start/', methods=['GET'])
 # def hello():
@@ -46,13 +40,37 @@ def upload():
 
     labels = features[label_name]
     del features[label_name]
-    features = features.as_matrix()
-    labels = labels.as_matrix()
+    X_train = features.as_matrix()
+    y_train = labels.as_matrix()
+
+    y_train = y_train.reshape( -1, 1 )
+
+    input_size = X_train.shape[1]
+    target_size = 3
+
+    new_y_train = []
+    for i in range(0, y_train.shape[0]):
+        if int(y_train[i][0]) == 0:
+            new_y_train.append([1, 0, 0])
+        elif int(y_train[i][0]) == 1:
+            new_y_train.append([0, 1, 0])
+        elif int(y_train[i][0]) == 2:
+            new_y_train.append([0, 0, 1])
+
+
+    ds = SupervisedDataSet( input_size, target_size )
+    ds.setField( 'input', X_train )
+    ds.setField( 'target', new_y_train )
+
+    hidden_size = 10   # arbitrarily chosen
+
+    net = buildNetwork( input_size, hidden_size, target_size, bias = True, recurrent=True)
+    trainer = BackpropTrainer( net, ds )
 
     tasks = []
     for i in range(0, 1000):
         print "{}".format(i)
-        tasks.append(test_dnn.delay(features, labels, layers, session_id))
+        tasks.append(test_dnn.delay(ds, net, trainer, X_train, y_train, session_id))
 
     print "Done"
     return jsonify(session_id=session_id)
