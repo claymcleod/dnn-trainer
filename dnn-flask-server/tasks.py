@@ -33,42 +33,43 @@ def test_dnn(X_train, y_train, layers, session_id):
 
     X_train, scaler = preprocess_data(X_train)
 
-    model.add(Dense(X_train.shape[1], 512, init='glorot_uniform'))
+    model.add(Dense(X_train.shape[1], 512))
     model.add(PReLU((512,)))
     model.add(BatchNormalization((512,)))
     model.add(Dropout(0.5))
 
-    model.add(Dense(512, 512, init='glorot_uniform'))
+    model.add(Dense(512, 512))
     model.add(PReLU((512,)))
     model.add(BatchNormalization((512,)))
     model.add(Dropout(0.5))
 
-    model.add(Dense(512, 512, init='glorot_uniform'))
+    model.add(Dense(512, 512))
     model.add(PReLU((512,)))
     model.add(BatchNormalization((512,)))
     model.add(Dropout(0.5))
 
-    model.add(Dense(512, 512, init='glorot_uniform'))
+    model.add(Dense(512, 512))
     model.add(PReLU((512,)))
     model.add(BatchNormalization((512,)))
     model.add(Dropout(0.5))
 
-    model.add(Dense(512, 512, init='glorot_uniform'))
+    model.add(Dense(512, 512))
     model.add(PReLU((512,)))
     model.add(BatchNormalization((512,)))
     model.add(Dropout(0.5))
 
-    model.add(Dense(512, 512, init='glorot_uniform'))
+    model.add(Dense(512, 512))
     model.add(PReLU((512,)))
     model.add(BatchNormalization((512,)))
     model.add(Dropout(0.5))
 
-    model.add(Dense(512, nb_classes, init='glorot_uniform'))
+    model.add(Dense(512, 3))
     model.add(Activation('softmax'))
 
     model.compile(loss='categorical_crossentropy', optimizer="adam")
     model.fit(X, y, nb_epoch=200, batch_size=4, validation_split=0.15, verbose=0)
     objective_score = model.evaluate(X_train, y_train, batch_size=32)
+    print("Objective score: {}".format(objective_score))
     db.results.insert_one({
         'session_id': session_id,
         'result': objective_score
