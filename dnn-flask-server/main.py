@@ -20,6 +20,9 @@ layers = [
 
 dropouts = [Dropout(x) for x in np.linspace(0, 1, 100)]
 
+def callback(result):
+    print(result)
+    
 # @app.route('/start/', methods=['GET'])
 # def hello():
 #     layers = np.random.choice(dropouts, np.random.randint(0, len(dropouts) - 1))
@@ -56,9 +59,6 @@ def upload():
     print "Done"
     session_id = np.random.randint(0, 50000)
     return jsonify(session_id=session_id)
-
-def callback(result):
-    print(result)
 
 if __name__ == '__main__':
   app.debug=True
