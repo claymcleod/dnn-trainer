@@ -8,7 +8,7 @@ db = client.dnn_results
 
 app = Celery('dnn', backend='amqp://guest@129.114.108.156//', broker='amqp://guest@129.114.108.156//')
 
-@app.task
+@app.task(ignore_result=True)
 def test_dnn(X_train, y_train, layers, session_id):
     # model = Sequential()
     # model.add(Dense(output_dim=64, input_dim=X_train.shape[1], init="glorot_uniform"))
@@ -19,7 +19,7 @@ def test_dnn(X_train, y_train, layers, session_id):
     # model.fit(X_train, y_train, nb_epoch=200, batch_size=32)
     # objective_score = model.evaluate(X_train, y_train, batch_size=32)
     result = 'Hello world'
-    db.insert_one({
+    db.results.insert_one({
         'session_id': session_id,
         'result': result
     })
