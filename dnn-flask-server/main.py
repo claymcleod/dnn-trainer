@@ -34,6 +34,7 @@ def upload():
     labels = features[label_name]
     del features[label_name]
 
+    layers = []
     tasks = []
     for i in range(0, 1000):
         print "{}".format(i)
