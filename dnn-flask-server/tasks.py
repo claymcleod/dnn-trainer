@@ -33,7 +33,7 @@ def test_dnn(X_train, y_train, layers, session_id):
 
     X_train, scaler = preprocess_data(X_train)
 
-    model.add(Dense(dims, 512, init='glorot_uniform'))
+    model.add(Dense(X_train.shape[1], 512, init='glorot_uniform'))
     model.add(PReLU((512,)))
     model.add(BatchNormalization((512,)))
     model.add(Dropout(0.5))
