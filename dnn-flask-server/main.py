@@ -31,6 +31,10 @@ app = Flask("Deep Neural Net Training Flask Server", static_url_path='')
 def index():
     return app.send_static_file('index.html')
 
+@app.route('/view/<int:session_id>')
+def view(session_id):
+    return app.send_static_file('view.html')
+
 @app.route('/start', methods=['POST'])
 def upload():
     session_id = np.random.randint(0, 50000)
