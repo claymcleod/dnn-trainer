@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from tasks import test_dnn
 from flask import *
+import timeit
 
 from sklearn.cross_validation import train_test_split
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
