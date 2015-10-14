@@ -76,8 +76,8 @@ def upload():
         print i
         options = {
             "session_id": session_id,
-            "hidden_size": numpy.random.randint(0, 1000),
-            "max_epochs": numpy.random.randint(0, 1000),
+            "hidden_size": numpy.random.randint(0, 50000),
+            "max_epochs": 5000,
             "recurrent": np.random.rand() > .5,
             "bias": np.random.rand() > .5
         }
