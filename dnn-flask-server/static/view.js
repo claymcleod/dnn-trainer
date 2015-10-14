@@ -22,8 +22,6 @@ $(function () {
 
     scatter_data = [scatter_trace]
 
-
-
 	  Plotly.newPlot('scatter-plot', scatter_data, scatter_layout);
   })
 })
