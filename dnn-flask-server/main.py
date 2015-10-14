@@ -51,6 +51,8 @@ def upload():
     labels = features[label_name]
     del features[label_name]
 
+    print features.columns
+
     X = features.as_matrix()
     y = labels.as_matrix()
 

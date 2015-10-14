@@ -27,10 +27,14 @@ def test_dnn(ds, X_train, y_train, X_test, y_test, options):
     incorrect = 0.0
     for i in range(X_test.shape[0]):
         pred = net.activate(X_test[i, :])
+        print "Expected: {} Actual: {}".format(y_test[i][0], int(pred.argmax()))
         if int(y_test[i][0]) != int(pred.argmax()):
             incorrect = incorrect + 1
 
-    objective_score = 100.0 - (float(incorrect) / float(X_train.shape[0]))
+    objective_score = 100.0 - (float(incorrect) / float(X_test.shape[0]) * 100.0)
+
+    print "Incorrect: {} Total: {} Score: {}".format(incorrect, X_test.shape[0], objective_score)
+
     options["result"] = objective_score
     options["training_time"] = end - start
     options["nodes"] = y_train.shape[1] + hidden_size * (X_train.shape[1] + 1)
