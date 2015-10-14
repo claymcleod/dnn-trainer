@@ -28,7 +28,7 @@ $(function () {
       percent = (parsed_number / 1000.0) * 100.0
       console.log(Math.round(percent))
       $('#progressbar').width(Math.round(percent).toString()+"%")
-      if (percent >= 100.0) {
+      if (percent >= 99.0) {
         var $active = $('.wizard .nav-tabs li.active');
         $active.next().removeClass('disabled');
         nextTab($active);
