@@ -13,6 +13,10 @@ from pybrain.datasets import SupervisedDataSet
 from pybrain.supervised.trainers import BackpropTrainer
 from pybrain.structure import RecurrentNetwork
 import numpy
+from bson.json_util import dumps
+from pymongo import MongoClient
+client = MongoClient('mongodb://129.114.108.156:27017/dnn')
+db = client.dnn_results
 
 app = Flask("Deep Neural Net Training Flask Server", static_url_path='')
 
@@ -54,19 +58,16 @@ def upload():
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=1337)
 
-    print "Train: {} {} Test: {} {}".format(X_train.shape, y_train.shape, X_test.shape, y_test.shape)
-
     input_size = X_train.shape[1]
     target_size = y_train.shape[1]
 
-    print 'Input: {} Target: {}'.format(input_size, target_size)
     ds = SupervisedDataSet( input_size, target_size )
     for (i, t) in zip(X_train, y_train):
-        print i, t
         ds.addSample(i, t)
 
     tasks = []
     for i in range(0, 1000):
+        print i
         options = {
             "session_id": session_id,
             "hidden_size": numpy.random.randint(0, 1000),
@@ -74,11 +75,20 @@ def upload():
             "recurrent": np.random.rand() > .5,
             "bias": np.random.rand() > .5
         }
-        print options
+
         tasks.append(test_dnn.delay(ds, X_train, y_train, X_test, y_test, options))
 
-    print "Done"
     return jsonify(session_id=session_id)
+
+@app.route('/api/')
+def api():
+    res = db.results.find({})
+    return dumps(res)
+
+@app.route('/api/<int:session_id>')
+def api_session(session_id):
+    res = db.results.find({'session_id': session_id})
+    return dumps(res)
 
 if __name__ == '__main__':
   app.debug=True

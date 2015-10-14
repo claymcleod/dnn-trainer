@@ -19,6 +19,13 @@ $(function () {
     });
   }
 
+  function updateSessionStatus(session_id) {
+    $.get("api/"+session_id, function( data ) {
+      json = JSON.parse(data)
+      console.log(json)
+    })
+  }
+
   $('#file').change(function (evt) {
     handleFileSelect(evt)
   })
@@ -31,7 +38,10 @@ $(function () {
       contentType: "application/json; charset=utf-8",
       url: "/start",
       success: function(data) {
-        $('#session_id').text(data.session_id);
+        si = data.session_id
+        $('#session_id').text(si);
+        console.log("Session id:", si)
+        setInterval(updateSessionStatus(si), 1000)
       }
     });
   })
