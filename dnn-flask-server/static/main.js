@@ -1,5 +1,7 @@
 var data = {}
 $(function () {
+  var session_id;
+
   function handleFileSelect(evt) {
     var file = evt.target.files[0];
     Papa.parse(file, {
@@ -19,10 +21,18 @@ $(function () {
     });
   }
 
-  function updateSessionStatus(session_id) {
+  function updateSessionStatus() {
     $.get("api/"+session_id, function( data ) {
       json = JSON.parse(data)
-      console.log(json)
+      parsed_number = json.length
+      percent = (parsed_number / 1000.0) * 100.0
+      console.log(Math.round(percent))
+      $('#progressbar').width(Math.round(percent).toString()+"%")
+      if (percent >= 100.0) {
+        var $active = $('.wizard .nav-tabs li.active');
+        $active.next().removeClass('disabled');
+        nextTab($active);
+      }
     })
   }
 
@@ -38,10 +48,11 @@ $(function () {
       contentType: "application/json; charset=utf-8",
       url: "/start",
       success: function(data) {
-        si = data.session_id
-        $('#session_id').text(si);
-        console.log("Session id:", si)
-        setInterval(updateSessionStatus(si), 1000)
+        session_id = data.session_id
+        $('#session_id').text(session_id);
+        $('#results_link').attr('href','/view/'+session_id);
+        console.log("Session id:", session_id)
+        setInterval(updateSessionStatus, 1000)
       }
     });
   })
