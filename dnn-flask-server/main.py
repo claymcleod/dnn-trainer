@@ -3,6 +3,14 @@ import numpy as np
 import pandas as pd
 from tasks import test_dnn
 from flask import *
+
+from sklearn.cross_validation import train_test_split
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from pybrain import *
+from pybrain.tools.shortcuts import buildNetwork
+from pybrain.datasets import SupervisedDataSet
+from pybrain.supervised.trainers import BackpropTrainer
+from pybrain.structure import RecurrentNetwork
 import numpy
 
 app = Flask("Deep Neural Net Training Flask Server", static_url_path='')
@@ -34,11 +42,39 @@ def upload():
     labels = features[label_name]
     del features[label_name]
 
-    layers = []
+    X = features.as_matrix()
+    y = labels.as_matrix()
+
+    ss = StandardScaler()
+    X = ss.fit_transform(X)
+
+    ohe = OneHotEncoder()
+    y = ohe.fit_transform(y.reshape( -1, 1 )).toarray()
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=1337)
+
+    print "Train: {} {} Test: {} {}".format(X_train.shape, y_train.shape, X_test.shape, y_test.shape)
+
+    input_size = X_train.shape[1]
+    target_size = y_train.shape[1]
+
+    print 'Input: {} Target: {}'.format(input_size, target_size)
+    ds = SupervisedDataSet( input_size, target_size )
+    for (i, t) in zip(X_train, y_train):
+        print i, t
+        ds.addSample(i, t)
+
     tasks = []
     for i in range(0, 1000):
-        print "{}".format(i)
-        tasks.append(test_dnn.delay(features, labels, layers, session_id))
+        options = {
+            "session_id": session_id,
+            "hidden_size": numpy.random.randint(0, 1000),
+            "max_epochs": numpy.random.randint(0, 1000),
+            "recurrent": np.random.rand() > .5,
+            "bias": np.random.rand() > .5
+        }
+        print options
+        tasks.append(test_dnn.delay(ds, X_train, y_train, X_test, y_test, options))
 
     print "Done"
     return jsonify(session_id=session_id)

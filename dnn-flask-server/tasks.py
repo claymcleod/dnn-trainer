@@ -1,41 +1,11 @@
-from __future__ import absolute_import
-from __future__ import print_function
 from pymongo import MongoClient
 from celery import Celery
-import numpy as np
-np.random.seed(1337)  # for reproducibility
-
-from keras.datasets import reuters
-from keras.models import Sequential
-from keras.layers.core import Dense, Dropout, Activation
-from keras.layers.normalization import BatchNormalization
-from keras.utils import np_utils
-from keras.preprocessing.text import Tokenizer
-
-max_words = 1000
-batch_size = 32
-nb_epoch = 5
-
-print("Loading data...")
-(X_train, y_train), (X_test, y_test) = reuters.load_data(nb_words=max_words, test_split=0.2)
-print(len(X_train), 'train sequences')
-print(len(X_test), 'test sequences')
-
-nb_classes = np.max(y_train)+1
-print(nb_classes, 'classes')
-
-print("Vectorizing sequence data...")
-tokenizer = Tokenizer(nb_words=max_words)
-X_train = tokenizer.sequences_to_matrix(X_train, mode="binary")
-X_test = tokenizer.sequences_to_matrix(X_test, mode="binary")
-print('X_train shape:', X_train.shape)
-print('X_test shape:', X_test.shape)
-
-print("Convert class vector to binary class matrix (for use with categorical_crossentropy)")
-Y_train = np_utils.to_categorical(y_train, nb_classes)
-Y_test = np_utils.to_categorical(y_test, nb_classes)
-print('Y_train shape:', Y_train.shape)
-print('Y_test shape:', Y_test.shape)
+from pybrain import *
+from pybrain.tools.shortcuts import buildNetwork
+from pybrain.datasets import SupervisedDataSet
+from pybrain.supervised.trainers import BackpropTrainer
+from pybrain.structure import RecurrentNetwork
+import numpy
 
 client = MongoClient('mongodb://129.114.108.156:27017/dnn')
 db = client.dnn_results
@@ -43,23 +13,23 @@ db = client.dnn_results
 app = Celery('dnn', backend='amqp://guest@129.114.108.156//', broker='amqp://guest@129.114.108.156//')
 
 @app.task(ignore_result=True)
-def test_dnn(X_train, y_train, layers, session_id):
-    model = Sequential()
-    model.add(Dense(512, input_shape=(max_words,)))
-    model.add(Activation('relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(nb_classes))
-    model.add(Activation('softmax'))
+def test_dnn(ds, X_train, y_train, X_test, y_test, options):
+    hidden_size = options["hidden_size"]
 
-    model.compile(loss='categorical_crossentropy', optimizer='adam')
+    net = buildNetwork( X_train.shape[1], hidden_size, y_train.shape[1], bias = options["bias"], recurrent=options["recurrent"])
+    trainer = BackpropTrainer( net, ds )
 
-    history = model.fit(X_train, Y_train, nb_epoch=nb_epoch, batch_size=batch_size, verbose=1, show_accuracy=True, validation_split=0.1)
-    score = model.evaluate(X_test, Y_test, batch_size=batch_size, verbose=1, show_accuracy=True)
+    trainer.trainUntilConvergence(validationProportion = 0.15, maxEpochs = options["max_epochs"])
 
-    objective_score = score
-    db.results.insert_one({
-        'session_id': session_id,
-        'result': objective_score
-    })
+    objective_score = net.activateOnDataset( ds )
+    incorrect = 0.0
+    for i in range(X_test.shape[0]):
+        pred = net.activate(X_test[i, :])
+        if int(y_test[i][0]) != int(pred.argmax()):
+            incorrect = incorrect + 1
+
+    objective_score = 100.0 - (float(incorrect) / float(X_train.shape[0]))
+    options["result"] = objective_score
+    db.results.insert_one(options)
 
     return objective_score
