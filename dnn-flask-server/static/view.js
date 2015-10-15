@@ -10,19 +10,19 @@ $(function () {
     }
 
     var scatter_trace = {
-      x: accuracy,
-      y: hidden_layers,
+      x: hidden_layers,
+      y: accuracy,
       mode: 'markers',
       type: 'scatter'
     };
 
     var scatter_layout = {
-      title:'Accuracy vs. Hidden Layers',
+      title:'Hidden Layers vs. Accuracy',
       xaxis: {
-        title: 'Accuracy'
+        title: 'Hidden Layers'
       },
       yaxis: {
-        title: 'Hidden Layers'
+        title: 'Accuracy'
       }
     };
 
