@@ -10,14 +10,20 @@ $(function () {
     }
 
     var scatter_trace = {
-      x: hidden_layers,
-      y: accuracy,
+      x: accuracy,
+      y: hidden_layers,
       mode: 'markers',
       type: 'scatter'
     };
 
     var scatter_layout = {
-      title:'Accuracy vs. Hidden Layers'
+      title:'Accuracy vs. Hidden Layers',
+      xaxis: {
+        title: 'Accuracy'
+      }
+      yaxis: {
+        title: 'Hidden Layers'
+      }
     };
 
     scatter_data = [scatter_trace]
@@ -42,7 +48,13 @@ $(function () {
     };
 
     var scatter_layout = {
-      title:'FFT'
+      title:'FFT Analysis',
+      xaxis: {
+        title: 'Frequency'
+      }
+      yaxis: {
+        title: 'Magnitude'
+      }
     };
 
     scatter_data = [scatter_trace]
