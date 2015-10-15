@@ -24,4 +24,29 @@ $(function () {
 
 	  Plotly.newPlot('scatter-plot', scatter_data, scatter_layout);
   })
+
+  $.get('/fft/'+session_id, function (data) {
+    data = JSON.parse(data)
+    ffts = []
+    indicies = []
+    for (item in data) {
+      ffts.push(data[item])
+      indicies.push(parseInt(item))
+    }
+
+    var scatter_trace = {
+      x: indicies,
+      y: ffts,
+      mode: 'markers',
+      type: 'scatter'
+    };
+
+    var scatter_layout = {
+      title:'FFT'
+    };
+
+    scatter_data = [scatter_trace]
+
+	  Plotly.newPlot('fft', scatter_data, scatter_layout);
+  })
 })

@@ -127,7 +127,7 @@ def upload():
         print i
         options = {
             "session_id": session_id,
-            "hidden_size": i,
+            "hidden_size": np.random.randint(0, 5000),
             "max_epochs": 1000
         }
         tasks.append(test_dnn.delay(ds, X_train, y_train, X_test, y_test, options))
@@ -142,7 +142,16 @@ def api():
 @app.route('/api/<int:session_id>')
 def api_session(session_id):
     res = db.results.find({'session_id': session_id})
-    return dumps(res)
+    json = dumps(res)
+    return json
+
+@app.route('/fft/<int:session_id>')
+def fft(session_id):
+    accuracies = []
+    for r in db.results.find({'session_id': session_id}):
+        accuracies.append(r["result"])
+
+    return dumps(abs(numpy.fft.fft(accuracies)))
 
 if __name__ == '__main__':
   app.debug=True
