@@ -20,7 +20,7 @@ $(function () {
       title:'Accuracy vs. Hidden Layers',
       xaxis: {
         title: 'Accuracy'
-      }
+      },
       yaxis: {
         title: 'Hidden Layers'
       }
@@ -51,7 +51,7 @@ $(function () {
       title:'FFT Analysis',
       xaxis: {
         title: 'Frequency'
-      }
+      },
       yaxis: {
         title: 'Magnitude'
       }
