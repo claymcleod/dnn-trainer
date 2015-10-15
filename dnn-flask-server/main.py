@@ -123,7 +123,7 @@ def upload():
         ds.addSample(i, t)
 
     tasks = []
-    for i in range(1, 100):
+    for i in range(1, 1000):
         print i
         options = {
             "session_id": session_id,
