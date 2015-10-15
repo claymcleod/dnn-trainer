@@ -86,24 +86,6 @@ def view(session_id):
 #
 #     return jsonify(session_id=session_id)
 
-def build_rnn(input_size, output_size, layers):
-    net = RecurrentNetwork()
-    layers_list = ["in"]
-    net.addInputModule(LinearLayer(input_size, name="in"))
-    for i in range(0, layers):
-        net.addModule(LinearLayer(input_size, name="hidden"+str(i)))
-        layers_list.append("hidden"+str(i))
-    net.addOutputModule(TanhLayer(output_size, name="out"))
-    layers_list.append("out")
-
-    for i in range(0, len(layers_list)-1):
-        net.addConnection(FullConnection(net[layers_list[i]], net[layers_list[i+1]]))
-
-    net.sortModules()
-    return net
-
-
-
 @app.route('/start', methods=['POST'])
 def upload():
     session_id = np.random.randint(0, 50000)
@@ -140,11 +122,15 @@ def upload():
     for (i, t) in zip(X_train, y_train):
         ds.addSample(i, t)
 
-
     tasks = []
-    for i in range(1, 2):
-        rnn = build_rnn(X_train.shape[1], 5, y_train.shape[1])
-        tasks.append(test_dnn.delay(ds, X_train, y_train, X_test, y_test, rnn))
+    for i in range(1, 100):
+        print i
+        options = {
+            "session_id": session_id,
+            "hidden_size": i,
+            "max_epochs": 1000
+        }
+        tasks.append(test_dnn.delay(ds, X_train, y_train, X_test, y_test, options))
 
     return jsonify(session_id=session_id)
 
