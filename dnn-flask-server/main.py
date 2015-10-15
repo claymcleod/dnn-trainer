@@ -35,6 +35,75 @@ def index():
 def view(session_id):
     return app.send_static_file('view.html')
 
+# @app.route('/start', methods=['POST'])
+# def upload():
+#     session_id = np.random.randint(0, 50000)
+#     label_name = request.json["label"]
+#     del request.json["label"]
+#
+#     data = request.json["data"]
+#     columns = data[0]
+#     del data[0]
+#
+#     features = pd.DataFrame(data, columns=columns)
+#     features.fillna(0)
+#
+#     labels = features[label_name]
+#     del features[label_name]
+#
+#     print features.columns
+#
+#     X = features.as_matrix()
+#     y = labels.as_matrix()
+#
+#     ss = StandardScaler()
+#     X = ss.fit_transform(X)
+#
+#     ohe = OneHotEncoder()
+#     y = ohe.fit_transform(y.reshape( -1, 1 )).toarray()
+#
+#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=1337)
+#
+#     input_size = X_train.shape[1]
+#     target_size = y_train.shape[1]
+#
+#     ds = SupervisedDataSet( input_size, target_size )
+#     for (i, t) in zip(X_train, y_train):
+#         ds.addSample(i, t)
+#
+#     tasks = []
+#     for i in range(1, 50000):
+#         print i
+#         options = {
+#             "session_id": session_id,
+#             "hidden_size": i,#numpy.random.randint(0, 5000),
+#             "max_epochs": 2000,
+#             "recurrent": True, #np.random.rand() > .5,
+#             "bias": True, #np.random.rand() > .5
+#         }
+#
+#         tasks.append(test_nn.delay(ds, X_train, y_train, X_test, y_test, options))
+#
+#     return jsonify(session_id=session_id)
+
+def build_rnn(input_size, output_size, layers):
+    net = RecurrentNetwork()
+    layers_list = ["in"]
+    net.addInputModule(LinearLayer(input_size, name="in"))
+    for i in range(0, layers):
+        net.addModule(LinearLayer(input_size, name="hidden"+str(i)))
+        layers_list.append("hidden"+str(i))
+    net.addOutputModule(TanhLayer(output_size, name="out"))
+    layers_list.append("out")
+
+    for i in range(0, len(layers_list)-1):
+        net.addConnection(FullConnection(net[layers_list[i]], net[layers_list[i+1]]))
+
+    net.sortModules()
+    return net
+
+
+
 @app.route('/start', methods=['POST'])
 def upload():
     session_id = np.random.randint(0, 50000)
@@ -71,18 +140,11 @@ def upload():
     for (i, t) in zip(X_train, y_train):
         ds.addSample(i, t)
 
-    tasks = []
-    for i in range(0, 1001):
-        print i
-        options = {
-            "session_id": session_id,
-            "hidden_size": numpy.random.randint(0, 5000),
-            "max_epochs": 5000,
-            "recurrent": np.random.rand() > .5,
-            "bias": np.random.rand() > .5
-        }
 
-        tasks.append(test_dnn.delay(ds, X_train, y_train, X_test, y_test, options))
+    tasks = []
+    for i in range(1, 2):
+        rnn = build_rnn(X_train.shape[1], 5, y_train.shape[1])
+        tasks.append(test_dnn.delay(ds, X_train, y_train, X_test, y_test, rnn))
 
     return jsonify(session_id=session_id)
 

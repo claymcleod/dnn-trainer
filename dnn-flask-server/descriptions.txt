@@ -1,0 +1,13 @@
+-- iris dataset --
+
+  > 5000 random hidden states
+    > 27102 - 5000 max epochs
+    > 32790 - 500 max epochs
+
+-- breast tissue dataset --
+
+  > 5000 random hidden states
+    > 32236 - 5000 max epochs
+
+  > 1-35kish hidden nodes
+    > 33892 - 2000 max epoch, reccurent=True, bias=True

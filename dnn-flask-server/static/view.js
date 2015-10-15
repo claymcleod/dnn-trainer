@@ -10,8 +10,8 @@ $(function () {
     }
 
     var scatter_trace = {
-      x: accuracy,
-      y: hidden_layers,
+      x: hidden_layers,
+      y: accuracy,
       mode: 'markers',
       type: 'scatter'
     };
