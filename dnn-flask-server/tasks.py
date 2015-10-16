@@ -1,10 +1,11 @@
 from pymongo import MongoClient
 from celery import Celery
-from pybrain import *
+from pybrain.structure.modules import *
 from pybrain.tools.shortcuts import buildNetwork
 from pybrain.datasets import SupervisedDataSet
 from pybrain.supervised.trainers import BackpropTrainer
-from pybrain.structure import RecurrentNetwork
+from pybrain.structure import RecurrentNetwork, LinearLayer, TanhLayer, BiasUnit, FullConnection
+from relulayer import ReluLayer
 import numpy
 import time
 
@@ -47,7 +48,7 @@ def build_rnn(input_size, output_size, layers):
     layers_list = ["in"]
     net.addInputModule(LinearLayer(input_size, name="in"))
     for i in range(0, layers):
-        net.addModule(LinearLayer(input_size, name="hidden"+str(i)))
+        net.addModule(ReluLayer(input_size, name="hidden"+str(i)))
         layers_list.append("hidden"+str(i))
     net.addOutputModule(TanhLayer(output_size, name="out"))
     layers_list.append("out")
