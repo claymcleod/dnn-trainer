@@ -123,11 +123,11 @@ def upload():
         ds.addSample(i, t)
 
     tasks = []
-    for i in range(1, 1000):
+    for i in range(1, 20000):
         print i
         options = {
             "session_id": session_id,
-            "hidden_size": np.random.randint(0, 5000),
+            "hidden_size": i, #np.random.randint(0, 5000),
             "max_epochs": 1000
         }
         tasks.append(test_dnn.delay(ds, X_train, y_train, X_test, y_test, options))
